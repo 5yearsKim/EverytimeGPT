@@ -45,6 +45,8 @@ for blob in blobs:
     train_from.append(gsutil)
 print(train_from)
 
+train_from = train_from[:1]
+
 dset = read_tfrecord(train_from).padded_batch(batch_size, padded_shapes=(MAX_SEQ_LEN, MAX_SEQ_LEN),\
     padding_values=tf.constant(0, dtype=tf.int64), drop_remainder=True)
 
