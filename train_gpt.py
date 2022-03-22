@@ -14,7 +14,7 @@ elif run_type == 'tpu':
     resolver = tf.distribute.cluster_resolver.TPUClusterResolver()
     tf.config.experimental_connect_to_cluster(resolver)
     tf.tpu.experimental.initialize_tpu_system(resolver)
-    strategy = tf.distribute.experimental.TPUStrategy(resolver)
+    strategy = tf.distribute.TPUStrategy(resolver)
 num_replica = strategy.num_replicas_in_sync
 batch_size = (BS // num_replica) * num_replica
 
@@ -27,7 +27,7 @@ with strategy.scope():
     criterion = sparse_categorical_crossentropy 
 
 train_from = glob('data/**/*.tfrecord', recursive=True)
-dset = read_tfrecord(train_from).padded_batch(batch_size, padding_values=tf.constant(0, dtype=tf.int64))
+dset = read_tfrecord(train_from).padded_batch(batch_size, padded_shapes=256, padding_values=tf.constant(0, dtype=tf.int64))
 
 skip_point = 16
 train_set, val_set = dset.skip(skip_point), dset.take(skip_point)
