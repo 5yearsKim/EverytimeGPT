@@ -27,7 +27,7 @@ with strategy.scope():
     criterion = sparse_categorical_crossentropy 
 
 train_from = glob('data/**/*.tfrecord', recursive=True)
-dset = read_tfrecord(train_from).padded_batch(batch_size, padded_shapes=256, padding_values=tf.constant(0, dtype=tf.int64))
+dset = read_tfrecord(train_from).padded_batch(batch_size, padded_shapes=(256, 256), padding_values=tf.constant(0, dtype=tf.int64))
 
 skip_point = 16
 train_set, val_set = dset.skip(skip_point), dset.take(skip_point)
