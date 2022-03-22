@@ -22,7 +22,7 @@ batch_size = (BS // num_replica) * num_replica
 
 
 with strategy.scope():
-    config = GPT2Config(n_embd=48, n_layer=1)
+    config = GPT2Config(vocab_size=32000, n_embd=768, n_layer=12, n_head=12)
     model = TFGPT2LMHeadModel(config)
     # model = TFGPT2LMHeadModel.from_pretrained('ckpts/epoch0_best')
     optimizer = tf.keras.optimizers.Adam(learning_rate=LR)

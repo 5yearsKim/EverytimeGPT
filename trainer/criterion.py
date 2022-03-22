@@ -6,9 +6,15 @@ def sparse_categorical_crossentropy(y_pred, y_true):
 
     y_true_masked = tf.boolean_mask(y_true, mask)
     y_pred_masked = tf.boolean_mask(y_pred, mask)
+    
+    print(y_true_masked)
+    print(y_pred_masked)
+
+    print(y_true_masked.shape)
+    print(y_pred_masked.shape)
 
     loss = tf.keras.losses.sparse_categorical_crossentropy(y_true_masked, y_pred_masked, from_logits=True)
-#    loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True)
+    # loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True)
     loss = tf.reduce_mean(loss)
     return loss
 

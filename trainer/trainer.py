@@ -4,9 +4,6 @@ import os
 
 class Trainer:
     def __init__(self, model, optim, criterion, train_set, val_set, strategy=None, save_dir='ckpts'):
-        self.model = model
-        self.optim = optim
-        self.criterion = criterion
         self.train_set = train_set
         self.val_set = val_set
         self.val_best = float('inf')
@@ -15,6 +12,9 @@ class Trainer:
         with strategy.scope():
             self.train_loss = tf.keras.metrics.Mean(name='train_loss') 
             self.val_loss = tf.keras.metrics.Mean(name='val_loss')
+            self.model = model
+            self.optim = optim
+            self.criterion = criterion
 
 
     def train(self, epochs):
