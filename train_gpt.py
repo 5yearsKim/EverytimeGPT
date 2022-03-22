@@ -28,22 +28,21 @@ with strategy.scope():
     optimizer = tf.keras.optimizers.Adam(learning_rate=LR)
     criterion = sparse_categorical_crossentropy 
 
-# train_from = glob('gs://nlp-pololo/everytime/*.tfrecord', recursive=True)
+train_from = glob('gs://nlp-pololo/everytime/*.tfrecord', recursive=True)
 
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/onion/private/languagemodel-tpu-key.json"
 
-storage_client = storage.Client()
-# Note: Client.list_blobs requires at least package version 1.17.0.
-blobs = storage_client.list_blobs('nlp-pololo')
+# storage_client = storage.Client()
+# blobs = storage_client.list_blobs('nlp-pololo')
 
-train_from = []
-bucket_name = 'nlp-pololo'
-for blob in blobs:
-    name = blob.name
-    gsutil = 'gs://' + bucket_name + '/' + name 
-    train_from.append(gsutil)
-print(train_from)
+# train_from = []
+# bucket_name = 'nlp-pololo'
+# for blob in blobs:
+#     name = blob.name
+#     gsutil = 'gs://' + bucket_name + '/' + name 
+#     train_from.append(gsutil)
+# print(train_from)
 
 train_from = train_from[:1]
 
