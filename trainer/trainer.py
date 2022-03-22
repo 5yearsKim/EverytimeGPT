@@ -36,6 +36,7 @@ class Trainer:
                 print('best val result! saving..')
                 save_path = os.path.join(self.save_dir, f'epoch{epoch}_best')
                 self.save(save_path)
+                self.val_best = self.val_loss.result().numpy()
 
             print(f'@{epoch}epoch@ loss : {self.train_loss.result()}, val_loss: {self.val_loss.result()}')
             print('---------------------------------')

@@ -9,9 +9,17 @@ file_to = 'data/sample.tfrecord'
 tokenizer = BertTokenizerFast.from_pretrained('./tknzrs/daily_tknzr')
 
 
-def tokenize_line(line):
+def tokenize_line(line, max_len=256):
+    holder = []
     input_ids = tokenizer.encode(line)
-    return input_ids
+    if len(input_ids) > max_len:
+        bos, eos = input_ids[0], input_ids[-1]
+        while len(input_ids) > max_len - 4:
+            holder.append(input_ids[:max_len - 4] + [eos])
+            input_ids = [bos] + input_ids[max_len //4 * 3:]
+    holder.append(input_ids)
+
+    return holder 
 
 def serialize_example(input_ids):
     feature = {
@@ -21,7 +29,7 @@ def serialize_example(input_ids):
     return example_proto.SerializeToString()
 
 def write_tfrecord(files_from, out_dir):
-    file_item_len = 10000
+    file_item_len = 500000
     file_idx = 1
     os.makedirs(os.path.dirname(out_dir), exist_ok=True) 
     writer = tf.io.TFRecordWriter('sample.tfrecord')
@@ -29,15 +37,17 @@ def write_tfrecord(files_from, out_dir):
         with open(fpath, 'r') as fr:
             for i, line in enumerate(fr):
                 if i % file_item_len == 0:
+                    print(i // 10000, '만')
                     writer.close()
                     writer = tf.io.TFRecordWriter(os.path.join(out_dir, f'record_{file_idx}.tfrecord'))
                     file_idx += 1
-                input_ids = tokenize_line(line)
-                example = serialize_example(input_ids)
-                writer.write(example)
+                input_ids_list = tokenize_line(line)
+                for input_ids in input_ids_list:
+                    example = serialize_example(input_ids)
+                    writer.write(example)
     writer.close()
 
 
 if __name__ == "__main__":
-    write_tfrecord(['data/sample.txt'], 'data/sample/')
+    write_tfrecord(['data/everytime.txt'], 'data/everytime/')
     # read_tfrecord('data/sample.tfrecord')
