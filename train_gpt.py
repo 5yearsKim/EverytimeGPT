@@ -8,7 +8,7 @@ from config import *
 from google.cloud import storage
 import os
 
-run_type = 'cpu'
+run_type = 'tpu'
 
 if run_type == 'cpu':
     strategy = tf.distribute.OneDeviceStrategy(device='/cpu:0')
@@ -43,6 +43,7 @@ for blob in blobs:
     name = blob.name
     gsutil = 'gs://' + bucket_name + '/' + name 
     train_from.append(gsutil)
+print(train_from)
 
 dset = read_tfrecord(train_from).padded_batch(batch_size, padded_shapes=(MAX_SEQ_LEN, MAX_SEQ_LEN),\
     padding_values=tf.constant(0, dtype=tf.int64), drop_remainder=True)
