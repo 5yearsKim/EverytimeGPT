@@ -15,6 +15,7 @@ class Trainer:
             self.model = model
             self.optim = optim
             self.criterion = criterion
+        self.num_steps = 10
 
 
     def train(self, epochs):
@@ -24,9 +25,13 @@ class Trainer:
             self.val_loss.reset_states()
 
             tepoch = tqdm(self.train_set, unit = 'batch', position=0, leave=True, ascii=True)
+            holder = []                
             for x, y in tepoch:
-                self.dist_train_step(x, y)
-                tepoch.set_postfix(loss=self.train_loss.result())
+                holder.append((x,y))
+                if len(holder) == self.num_steps:
+                    self.dist_multiple_train_step(holder)
+                    holder.clear()
+                    tepoch.set_postfix(loss=self.train_loss.result().numpy())
 
             print('validating..')
             for x, y in self.val_set:
@@ -40,6 +45,11 @@ class Trainer:
 
             print(f'@{epoch}epoch@ loss : {self.train_loss.result()}, val_loss: {self.val_loss.result()}')
             print('---------------------------------')
+
+    @tf.function
+    def dist_multiple_train_step(self, data_iter):
+        for x, y in data_iter:
+            self.strategy.run(self.train_step, args=(x, y))
 
     @tf.function
     def dist_train_step(self, x, y):

@@ -11,6 +11,9 @@ strategy, num_replica = setup_strategy()
 
 batch_size = (BS // num_replica) * num_replica
 
+if num_replica == 1:
+    batch_size = 1
+
 with strategy.scope():
     config = GPT2Config(vocab_size=32000, n_embd=768, n_layer=12, n_head=12)
     model = TFGPT2LMHeadModel(config)
