@@ -1,0 +1,54 @@
+from transformers import BertTokenizerFast, TFGPT2LMHeadModel, GPT2Config
+import tensorflow as tf
+
+tokenizer = BertTokenizerFast.from_pretrained("./tknzrs/daily_tknzr")
+
+def inference():
+    print('tokenizer loaded')
+
+    model = TFGPT2LMHeadModel.from_pretrained("ckpts/converted", pad_token_id=0, eos_token_id=3 )
+
+    text_start = '입결이'
+
+    inputs = tokenizer(text_start, return_tensors="tf")
+    outputs = model(inputs)
+    logits = outputs.logits
+
+    input_ids = inputs.input_ids[:, :-1]
+    # sample_outputs = generate_topk(model, input_ids) 
+    sample_outputs = generate_beam(model, input_ids) 
+
+    decoded = decoding(sample_outputs)
+    print(decoded)
+
+def decoding(ids_list):
+    decoded = tokenizer.batch_decode(ids_list)
+    return decoded
+    # return tokenizer.convert_ids_to_tokens(ids[0])
+
+def generate_beam(model, input_ids, num_beams=1, max_len=40):
+    sample_outputs = model.generate(
+        input_ids,
+        max_length=max_len, 
+        num_beams=num_beams,
+        num_return_sequences=num_beams,
+        early_stopping=True,
+        no_repeat_ngram_size=1,
+    )
+    return sample_outputs.numpy()
+
+def generate_topk(model, input_ids, k=5, max_len=40, num_sent=3, temperature=0.8):
+    sample_outputs = model.generate(
+        input_ids,
+        max_length=max_len,
+        do_sample=True,
+        top_k=k,
+        num_return_sequences=num_sent,
+        temperature=temperature,
+        early_stopping=True,
+        no_repeat_ngram_size=1,
+    )
+    return sample_outputs.numpy()
+
+if __name__ == '__main__':
+    inference()

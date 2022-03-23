@@ -1,2 +1,7 @@
+#training
+
 https://www.kaggle.com/code/riblidezso/finetune-xlm-roberta-on-jigsaw-test-data-with-mlm/notebook
 
+# generation
+
+https://huggingface.co/blog/how-to-generate

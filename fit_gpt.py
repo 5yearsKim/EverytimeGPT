@@ -20,11 +20,15 @@ def create_model(max_len=256):
     gpt = TFGPT2LMHeadModel(config)
     out = gpt(input_ids).logits
     model = tf.keras.Model(inputs=input_ids, outputs=out)
+    if IS_LOAD:
+        load_path = 'ckpts/best.h5'
+        model.load_weights(load_path)
+        print(f'loaded from {load_path}!!')
     # model = TFGPT2LMHeadModel(config)
     optimizer = tf.keras.optimizers.Adam(learning_rate=LR)
     model.compile(
         optimizer=optimizer,
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, label_smoothing=0.1),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     )
     return model
 
@@ -43,7 +47,7 @@ skip_point = 1000
 train_set, val_set = dset.skip(skip_point), dset.take(skip_point)
 print('splitting train/val set..')
 
-train_set = strategy.experimental_distribute_dataset(train_set)
+train_set = strategy.experimental_distribute_dataset(train_set.repeat())
 val_set = strategy.experimental_distribute_dataset(val_set)
 
 train_steps = 500000 // BS + 1
