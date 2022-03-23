@@ -14,3 +14,4 @@ def setup_strategy():
 
     return strategy, num_replica
 
+
