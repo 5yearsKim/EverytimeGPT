@@ -1,8 +1,7 @@
 import tensorflow as tf
 
-# @tf.function
+@tf.function
 def sparse_categorical_crossentropy(y_true, y_pred):
-    print(y_true)
     loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True)
     loss = tf.reduce_mean(loss)
     return loss
