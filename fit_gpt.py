@@ -30,7 +30,8 @@ def create_model(max_len=256):
     optimizer = tf.keras.optimizers.Adam(learning_rate=LR)
     model.compile(
         optimizer=optimizer,
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        # loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        loss=sparse_categorical_crossentropy,
     )
     return model
 
