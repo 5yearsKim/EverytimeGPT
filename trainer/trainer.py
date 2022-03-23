@@ -15,7 +15,7 @@ class Trainer:
             self.model = model
             self.optim = optim
             self.criterion = criterion
-        self.num_steps = 10
+        self.num_steps = 4 
 
 
     def train(self, epochs):
