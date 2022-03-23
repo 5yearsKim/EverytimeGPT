@@ -5,21 +5,11 @@ from trainer.criterion import sparse_categorical_crossentropy
 from dataloader.load_gpt_data import read_tfrecord
 from glob import glob
 from config import *
-from google.cloud import storage
-import os
+from distribute.utils import setup_strategy
 
-run_type = 'tpu'
+strategy, num_replica = setup_strategy()
 
-if run_type == 'cpu':
-    strategy = tf.distribute.OneDeviceStrategy(device='/cpu:0')
-elif run_type == 'tpu':
-    resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu='local')
-    tf.config.experimental_connect_to_cluster(resolver)
-    tf.tpu.experimental.initialize_tpu_system(resolver)
-    strategy = tf.distribute.TPUStrategy(resolver)
-num_replica = strategy.num_replicas_in_sync
 batch_size = (BS // num_replica) * num_replica
-
 
 with strategy.scope():
     config = GPT2Config(vocab_size=32000, n_embd=768, n_layer=12, n_head=12)
@@ -28,21 +18,7 @@ with strategy.scope():
     optimizer = tf.keras.optimizers.Adam(learning_rate=LR)
     criterion = sparse_categorical_crossentropy 
 
-train_from = glob('gs://nlp-pololo/everytime/*.tfrecord', recursive=True)
-
-
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/onion/private/languagemodel-tpu-key.json"
-
-# storage_client = storage.Client()
-# blobs = storage_client.list_blobs('nlp-pololo')
-
-# train_from = []
-# bucket_name = 'nlp-pololo'
-# for blob in blobs:
-#     name = blob.name
-#     gsutil = 'gs://' + bucket_name + '/' + name 
-#     train_from.append(gsutil)
-# print(train_from)
+train_from = glob('data/everytime/*.tfrecord', recursive=True)
 
 train_from = train_from[:1]
 

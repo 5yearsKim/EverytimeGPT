@@ -50,7 +50,7 @@ class Trainer:
     def train_step(self, x, y):
         with tf.GradientTape() as tape:
             logits = self.model(x, training=True).logits
-            loss = self.criterion(logits, y)
+            loss = self.criterion(y, logits)
         gradient = tape.gradient(loss, self.model.trainable_variables)
         self.optim.apply_gradients(zip(gradient, self.model.trainable_variables))
         self.train_loss(loss)
@@ -63,7 +63,7 @@ class Trainer:
     @tf.function(experimental_relax_shapes=True)
     def val_step(self, x, y):
         logits = self.model(x).logits
-        loss = self.criterion(logits, y)
+        loss = self.criterion(y, logits)
         self.val_loss(loss)
 
     def save(self, save_path):
