@@ -1,6 +1,7 @@
 import tensorflow as tf
 from transformers import GPT2Tokenizer, TFGPT2LMHeadModel, GPT2Config, TFPreTrainedModel, BertTokenizerFast
 from dataloader.load_gpt_data import read_tfrecord
+from dataloader.utils import load_from_gcs
 from glob import glob
 from config import *
 from google.cloud import storage
@@ -32,10 +33,11 @@ def create_model(max_len=256):
     )
     return model
 
-with strategy.scope():
-    model = create_model()
+# with strategy.scope():
+#     model = create_model()
 
-train_from = glob('data/everytime/*.tfrecord', recursive=True)
+# train_from = glob('data/everytime/*.tfrecord', recursive=True)
+train_from = load_from_gcs('nlp-pololo', prefix='everytime_keword/')
 
 # train_from = train_from[:1]
 print(train_from)
@@ -67,10 +69,10 @@ callbacks = [
 
 
 print(f'train batch size={batch_size}, lr={LR}')
-model.fit(train_set,
-    epochs=EPOCHS,
-    steps_per_epoch=train_steps,
-    callbacks=callbacks,
-    validation_data=val_set,
-    validation_steps=val_steps
-    )
+# model.fit(train_set,
+#     epochs=EPOCHS,
+#     steps_per_epoch=train_steps,
+#     callbacks=callbacks,
+#     validation_data=val_set,
+#     validation_steps=val_steps
+#     )

@@ -1,28 +1,29 @@
 from transformers import BertTokenizerFast, TFGPT2LMHeadModel, GPT2Config
 import tensorflow as tf
+from config import *
 
-tokenizer = BertTokenizerFast.from_pretrained("./tknzrs/daily_tknzr")
+tokenizer = BertTokenizerFast.from_pretrained(TKNZR_PATH)
 
 def inference():
     print('tokenizer loaded')
 
-    model = TFGPT2LMHeadModel.from_pretrained("ckpts/converted", pad_token_id=0, eos_token_id=3 )
+    model = TFGPT2LMHeadModel.from_pretrained(DEPLOY_PATH, pad_token_id=0, eos_token_id=3 )
 
-    text_start = '입결이'
+    text_start = '맛집 추천'
 
     inputs = tokenizer(text_start, return_tensors="tf")
-    outputs = model(inputs)
-    logits = outputs.logits
 
     input_ids = inputs.input_ids[:, :-1]
-    # sample_outputs = generate_topk(model, input_ids) 
-    sample_outputs = generate_beam(model, input_ids) 
+    sample_outputs = generate_topk(model, input_ids, max_len=80) 
+    # sample_outputs = generate_beam(model, input_ids) 
 
     decoded = decoding(sample_outputs)
-    print(decoded)
+    for sent in decoded:
+        print(sent)
 
 def decoding(ids_list):
     decoded = tokenizer.batch_decode(ids_list)
+    decoded = list(map(lambda s: s.replace('[PAD]', ''), decoded))
     return decoded
     # return tokenizer.convert_ids_to_tokens(ids[0])
 

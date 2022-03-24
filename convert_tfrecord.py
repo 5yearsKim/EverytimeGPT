@@ -49,5 +49,5 @@ def write_tfrecord(files_from, out_dir):
 
 
 if __name__ == "__main__":
-    write_tfrecord(['data/everytime.txt'], 'data/everytime/')
+    write_tfrecord(['data/everytime_keword.txt'], 'data/everytime_keword/')
     # read_tfrecord('data/sample.tfrecord')
