@@ -15,3 +15,12 @@ def read_tfrecord(files_from):
     raw_dataset = tf.data.TFRecordDataset(files_from)
     dataset = raw_dataset.map(_parse_func).map(make_label)
     return dataset
+
+
+if __name__== "__main__":
+
+    import os
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/onion/private/languagemodel-tpu-key.json"
+    dset = read_tfrecord(['gs://nlp-pololo/everytime_keword/record_1.tfrecord' ])
+    for item in dset:
+        print(dset)

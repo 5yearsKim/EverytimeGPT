@@ -22,7 +22,7 @@ def create_model(max_len=256):
     out = gpt(input_ids).logits
     model = tf.keras.Model(inputs=input_ids, outputs=out)
     if IS_LOAD:
-        load_path = 'ckpts/best.h5'
+        load_path = LOAD_PATH 
         model.load_weights(load_path)
         print(f'loaded from {load_path}!!')
     # model = TFGPT2LMHeadModel(config)
@@ -33,12 +33,12 @@ def create_model(max_len=256):
     )
     return model
 
-# with strategy.scope():
-#     model = create_model()
+with strategy.scope():
+    model = create_model()
+
 
 # train_from = glob('data/everytime/*.tfrecord', recursive=True)
 train_from = load_from_gcs('nlp-pololo', prefix='everytime_keword/')
-
 # train_from = train_from[:1]
 print(train_from)
 
