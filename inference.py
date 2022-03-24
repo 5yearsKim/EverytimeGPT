@@ -22,8 +22,11 @@ def inference():
         print(sent)
 
 def decoding(ids_list):
+    def make_pretty(sent):
+        sent = sent.replace('[PAD]', '').replace('\n', '').strip()
+        return sent
     decoded = tokenizer.batch_decode(ids_list)
-    decoded = list(map(lambda s: s.replace('[PAD]', ''), decoded))
+    decoded = list(map(make_pretty, decoded))
     return decoded
     # return tokenizer.convert_ids_to_tokens(ids[0])
 
@@ -38,7 +41,7 @@ def generate_beam(model, input_ids, num_beams=1, max_len=40):
     )
     return sample_outputs.numpy()
 
-def generate_topk(model, input_ids, k=5, max_len=40, num_sent=3, temperature=0.8):
+def generate_topk(model, input_ids, k=5, max_len=40, num_sent=3, temperature=0.8, no_repeat_size=1):
     sample_outputs = model.generate(
         input_ids,
         max_length=max_len,
@@ -47,7 +50,9 @@ def generate_topk(model, input_ids, k=5, max_len=40, num_sent=3, temperature=0.8
         num_return_sequences=num_sent,
         temperature=temperature,
         early_stopping=True,
-        no_repeat_ngram_size=1,
+        # no_repeat_ngram_size=no_repeat_size,
+        no_repeat_ngram_size=no_repeat_size,
+        repetition_penalty=1.15,
     )
     return sample_outputs.numpy()
 

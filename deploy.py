@@ -22,17 +22,29 @@ class GenerateTpl(BaseModel):
 
 @app.post('/generate_sample')
 async def generate_sample(body: GenerateTpl):
-    if body.keywords:
+    def make_pretty(sent):
+        if not sent.endswith('[SEP]'):
+            sent = sent + '...'
+        sent = sent.replace('[CLS]', '').replace('[SEP]', '')
+        sent = sent.split('[CSEP]')[-1]
+        return sent
+
+    mode = 'keyword' if body.keywords else 'normal'
+
+    if mode == 'keyword':
         prefix = '[MSEP]'.join(body.keywords)
         sent = prefix + '[CSEP]' + body.sent
+        no_repeat_size = 2
     else:
         sent = body.sent
+        no_repeat_size = 1
 
     inputs = tokenizer(sent, return_tensors="tf")
 
     input_ids = inputs.input_ids[:, :-1]
-    sample_outputs = generate_topk(model, input_ids, max_len=80, k=4) 
+    sample_outputs = generate_topk(model, input_ids, max_len=80, k=4, no_repeat_size=no_repeat_size) 
     # sample_outputs = generate_beam(model, input_ids) 
 
     decoded = decoding(sample_outputs)
+    decoded = list(map(make_pretty, decoded))
     return {'generated': decoded}

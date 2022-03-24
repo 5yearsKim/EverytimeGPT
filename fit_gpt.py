@@ -5,7 +5,6 @@ from dataloader.utils import load_from_gcs
 from glob import glob
 from config import *
 from google.cloud import storage
-import os
 from distribute.utils import setup_strategy
 
 from tensorflow.keras.callbacks import ReduceLROnPlateau, ModelCheckpoint
@@ -69,10 +68,10 @@ callbacks = [
 
 
 print(f'train batch size={batch_size}, lr={LR}')
-# model.fit(train_set,
-#     epochs=EPOCHS,
-#     steps_per_epoch=train_steps,
-#     callbacks=callbacks,
-#     validation_data=val_set,
-#     validation_steps=val_steps
-#     )
+model.fit(train_set,
+    epochs=EPOCHS,
+    steps_per_epoch=train_steps,
+    callbacks=callbacks,
+    validation_data=val_set,
+    validation_steps=val_steps
+    )

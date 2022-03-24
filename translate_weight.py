@@ -7,6 +7,6 @@ gpt = TFGPT2LMHeadModel(config)
 out = gpt(input_ids).logits
 model = tf.keras.Model(inputs=input_ids, outputs=out)
 
-model.load_weights('ckpts/gpt6.h5')
+model.load_weights('ckpts/kw_gpt1.h5')
 
-gpt.save_pretrained('ckpts/converted')
+gpt.save_pretrained('ckpts/kw_converted')
