@@ -2,7 +2,7 @@ import tensorflow as tf
 from transformers import GPT2Tokenizer, TFGPT2LMHeadModel, GPT2Config, TFPreTrainedModel, BertTokenizerFast
 from trainer import Trainer
 from trainer.criterion import sparse_categorical_crossentropy 
-from dataloader.load_gpt_data import read_tfrecord
+from dataloader.load_data import read_tfrecord
 from glob import glob
 from config import *
 from distribute.utils import setup_strategy

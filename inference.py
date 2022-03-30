@@ -38,6 +38,7 @@ def generate_beam(model, input_ids, num_beams=1, max_len=40):
         num_return_sequences=num_beams,
         early_stopping=True,
         no_repeat_ngram_size=1,
+        bad_token_ids = msep, csep
     )
     return sample_outputs.numpy()
 
