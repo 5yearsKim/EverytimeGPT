@@ -35,7 +35,7 @@ with strategy.scope():
     model = create_model()
 
 # train_from = glob('data/sample/*.tfrecord', recursive=True)
-train_from = load_from_gcs('nlp-pololo', prefix='mlm_tfrecord/everytime/')
+train_from = load_from_gcs('nlp-pololo', prefix='mlm_tfrecord/news/')
 # train_from = train_from[:1]
 print(train_from)
 
@@ -52,7 +52,7 @@ print('splitting train/val set..')
 train_set = strategy.experimental_distribute_dataset(train_set.repeat())
 val_set = strategy.experimental_distribute_dataset(val_set)
 
-train_steps = 2000000 // BS + 1
+train_steps = 1000000 // BS + 1
 val_steps = skip_point 
 
 
@@ -67,14 +67,11 @@ callbacks = [
     # WandbCallback(),
     ]
 
-for data in train_set:
-    print(data.shape)
-    break
-# print(f'train batch size={batch_size}, lr={LR}')
-# model.fit(train_set,
-#     epochs=EPOCHS,
-#     steps_per_epoch=train_steps,
-#     callbacks=callbacks,
-#     validation_data=val_set,
-#     validation_steps=val_steps
-# )
+print(f'train batch size={batch_size}, lr={LR}')
+model.fit(train_set,
+    epochs=EPOCHS,
+    steps_per_epoch=train_steps,
+    callbacks=callbacks,
+    validation_data=val_set,
+    validation_steps=val_steps
+)
