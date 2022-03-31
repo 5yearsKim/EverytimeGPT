@@ -15,7 +15,7 @@ if num_replica == 1:
     batch_size = 1
 
 def create_model(max_len=256):
-    config = BertConfig(vocab_size=32000, n_embd=512, n_layer=8, n_head=8)
+    config = BertConfig(**BERT_SMALL_CONFIG)
     input_ids = tf.keras.layers.Input(shape=(max_len,), dtype='int32')
     bert = TFBertLMHeadModel(config)
     out = bert(input_ids).logits

@@ -3,7 +3,7 @@ from transformers import BertTokenizerFast, TFGPT2LMHeadModel, GPT2Config
 import tensorflow as tf
 from pydantic import BaseModel
 from config import *
-from inference import generate_topk, decoding
+from inference_gpt import generate_topk, decoding
 app = FastAPI()
 
 tokenizer = BertTokenizerFast.from_pretrained("./tknzrs/daily_tknzr")
