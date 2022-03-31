@@ -7,8 +7,17 @@ def _int64_feature(value):
   """Returns an int64_list from a bool / enum / int / uint."""
   return tf.train.Feature(int64_list=tf.train.Int64List(value=list(value)))
 
+def _float_feature(value):
+  """Returns a float_list from a float / double."""
+  return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+
 def serialize_ids(**kwargs):
-    feature = {k: _int64_feature(v) for k, v in kwargs.items()}
+    feature = {}
+    for k, v in kwargs.items():
+        if isinstance(v, float):
+            feature[k] = _float_feature(v)
+        elif isinstance(list(v)[0], int):
+            feature[k] = _int64_feature(v) 
     example_proto = tf.train.Example(
         features=tf.train.Features(feature=feature)
     )
@@ -29,7 +38,26 @@ def load_from_gcs(bucket_name, prefix=None):
     return train_from
 
 def masked_lm_predictions(input_ids, masked_lm_prob,
-                            vocab_size=32000, mask_token_id=4, except_token_ids = [0, 1, 2, 3, 4, 5, 6, 7]):
+                            vocab_size=32000, mask_token_id=4, except_token_ids = [0, 1, 2, 3, 4, 5, 6, 7], with_sop=False, csep_token_id=5, sep_token_id=3):
+    original_input_ids = input_ids.copy()
+
+    if with_sop:
+        bos, eos = input_ids[0], input_ids[-1]
+        csep_locs = [index for index, element in enumerate(input_ids) if element == csep_token_id]
+        if len(csep_locs) == 0:
+            sop_label = 0.5
+        else:
+            csep_loc = random.choice(csep_locs)
+            if random.random() < 0.5:
+                sop_label = 0.
+                input_ids[csep_loc] = sep_token_id
+            else:
+                bos, eos = input_ids[0], input_ids[-1]
+                sent_a, sent_b = input_ids[1:csep_loc], input_ids[csep_loc + 1:-1]
+                sop_label = 1.
+                input_ids = [bos] + sent_b + [sep_token_id] + sent_a + [eos]
+
+
     masked_input_ids = input_ids.copy()
     masked_label = [-100 for _ in range(len(input_ids))]
 
@@ -49,13 +77,19 @@ def masked_lm_predictions(input_ids, masked_lm_prob,
         masked_label[i] = tkn_id
         masked_input_ids[i] = masked_token
 
-    return {
-        'input_ids': input_ids,
+    to_return = {
+        'input_ids': original_input_ids,
         'masked_input_ids': masked_input_ids,
         'masked_label': masked_label,
     }
+    if with_sop:
+        to_return['sop_label'] = sop_label
+
+    return to_return
+
+
 
 if __name__ == '__main__':
-    data = [0, 5, 11, 66, 66, 66, 88, 99, 9, 9, 1, 0]
-    masked = masked_lm_predictions(data, 0.3)
+    data = [0,  11, 66, 66, 5, 66, 88, 99, 9, 9, 1, 0]
+    masked = masked_lm_predictions(data, 0.3, with_sop=True)
     print(masked)

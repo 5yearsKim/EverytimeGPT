@@ -5,9 +5,10 @@ import tensorflow as tf
 
 
 test_mlm = [
-  '오늘 [MASK] 는 [MASK]이다.',
-  '설명은 필요[MASK]',
-  '쿠팡..[MSEP]그에게 [MASK]할 때가 왔는가&안 그래도[MSEP]매일 문자[MASK] 와요'
+    '대한민국의 수도는 서울[MASK].',
+    '이번에 발생했던 [MASK]는 [MASK]일 것으로 예상됩니다.',
+    '진작 [MASK] 했으면 [MASK]가 없었을텐데',
+    '쿠팡..[MSEP]그에게 [MASK]할 때가 왔는가&안 그래도[MSEP]매일 문자[MASK] 와요'
 ]
 
 
@@ -29,8 +30,11 @@ def inference():
         input_ids = input_ids.numpy()
         for j, char in enumerate(input_ids):
             if char == 4:
+            # if True:
                 input_ids[j] = top_tokens[i, j]
         decoded = tokenizer.decode(input_ids)
         print(decoded)
 
+if __name__ == '__main__':
+    inference()
 

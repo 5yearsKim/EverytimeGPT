@@ -1,4 +1,4 @@
-from transformers import BertConfig, BertTokenizerFast, TFBertLMHeadModel
+from transformers import BertConfig, BertTokenizerFast, TFBertForPreTraining 
 from config import *
 from distribute.utils import setup_strategy
 import tensorflow as tf
@@ -14,36 +14,47 @@ batch_size = (BS // num_replica) * num_replica
 if num_replica == 1:
     batch_size = 1
 
-def create_model(max_len=256):
+def create_model(max_len=256, with_sop=False):
     config = BertConfig(**BERT_SMALL_CONFIG)
     input_ids = tf.keras.layers.Input(shape=(max_len,), dtype='int32')
-    bert = TFBertLMHeadModel(config)
-    out = bert(input_ids).logits
-    model = tf.keras.Model(inputs=input_ids, outputs=out)
+    bert = TFBertForPreTraining(config)
+    bout = bert(input_ids)
+    outputs =  [bout.prediction_logits, bout.seq_relationship_logits[:, 0]] if with_sop else bout.prediction_logits
+    model = tf.keras.Model(inputs=input_ids, outputs=outputs)
+
     if IS_LOAD:
         load_path = LOAD_PATH 
         model.load_weights(load_path)
         print(f'loaded from {load_path}!!')
+
     optimizer = tf.keras.optimizers.Adam(learning_rate=LR)
+    losses = [masked_cce, tf.keras.losses.BinaryCrossentropy(from_logits=True)] if with_sop else masked_cce
     model.compile(
         optimizer=optimizer,
-        loss=masked_cce,
+        loss=losses,
+        loss_weights=[1, 5],
     )
     return model
 
 with strategy.scope():
-    model = create_model()
+    model = create_model(with_sop=WITH_SOP)
 
 # train_from = glob('data/sample/*.tfrecord', recursive=True)
 train_from = load_from_gcs('nlp-pololo', prefix='mlm_tfrecord/news/')
 # train_from = train_from[:1]
 print(train_from)
 
-dset = read_mlm_tfrecord(train_from)\
-    .padded_batch(batch_size,\
-        padded_shapes=(MAX_SEQ_LEN, MAX_SEQ_LEN),\
-        padding_values=(tf.constant(0, dtype=tf.int64), tf.constant(-100, dtype=tf.int64)),\
-        drop_remainder=True)
+if WITH_SOP:
+    dset = read_mlm_tfrecord(train_from, with_sop=True)\
+        .padded_batch(batch_size,\
+            padded_shapes=(MAX_SEQ_LEN, (MAX_SEQ_LEN, 1)),\
+            padding_values=(tf.constant(0, dtype=tf.int64), (tf.constant(-100, dtype=tf.int64), 0.)),\
+            drop_remainder=True)
+else:
+    dset = read_mlm_tfrecord(train_from).padded_batch(batch_size,
+            padded_shapes=(MAX_SEQ_LEN, MAX_SEQ_LEN),\
+            padding_values=(tf.constant(0, dtype=tf.int64), tf.constant(-100, dtype=tf.int64)),\
+            drop_remainder=True)
 
 skip_point = 1000 
 train_set, val_set = dset.skip(skip_point), dset.take(skip_point)
