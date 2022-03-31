@@ -63,7 +63,7 @@ print('splitting train/val set..')
 train_set = strategy.experimental_distribute_dataset(train_set.repeat())
 val_set = strategy.experimental_distribute_dataset(val_set)
 
-train_steps = 1000000 // BS + 1
+train_steps = 2000000 // BS + 1
 val_steps = skip_point 
 
 

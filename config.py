@@ -20,7 +20,7 @@ BERT_SMALL_CONFIG = {
 IS_LOAD = False 
 WITH_SOP = False 
 LOAD_PATH = 'best.h5'
-BS = 64 
+BS = 128 
 EPOCHS = 50 
 LR = 1e-4
 
