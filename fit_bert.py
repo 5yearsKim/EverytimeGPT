@@ -40,7 +40,7 @@ with strategy.scope():
     model = create_model(with_sop=WITH_SOP)
 
 # train_from = glob('data/sample/*.tfrecord', recursive=True)
-train_from = load_from_gcs('nlp-pololo', prefix='mlm_tfrecord/news/')
+train_from = load_from_gcs('nlp-pololo', prefix='mlm_tfrecord/aihub_sns/')
 # train_from = train_from[:1]
 print(train_from)
 

@@ -17,12 +17,12 @@ BERT_SMALL_CONFIG = {
 
 ''' train'''
 
-IS_LOAD = False 
+IS_LOAD = True 
 WITH_SOP = False 
-LOAD_PATH = 'best.h5'
+LOAD_PATH = 'ckpts/best.h5'
 BS = 128 
 EPOCHS = 50 
-LR = 1e-4
+LR = 5e-5
 
 ''' deploy '''
 TKNZR_PATH = 'tknzrs/daily_tknzr'
