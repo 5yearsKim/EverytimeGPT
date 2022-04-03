@@ -40,7 +40,12 @@ with strategy.scope():
     model = create_model(with_sop=WITH_SOP)
 
 # train_from = glob('data/sample/*.tfrecord', recursive=True)
-train_from = load_from_gcs('nlp-pololo', prefix='mlm_tfrecord/aihub_sns/')
+prefixes = ['mlm_tfrecord/aihub_sns', 'mlm_tfrecord/aihub_conversation', 'mlm_tfrecord/everytime', 'mlm_tfrecord/kakao']
+train_from = []
+for prefix in prefixes:
+    train_from_part = load_from_gcs('nlp-pololo', prefix=prefix)
+    train_from.extend(train_from_part)
+train_from = sorted(train_from, key=lambda path: path.split('/')[-1])
 # train_from = train_from[:1]
 print(train_from)
 
@@ -79,10 +84,10 @@ callbacks = [
     ]
 
 print(f'train batch size={batch_size}, lr={LR}')
-model.fit(train_set,
-    epochs=EPOCHS,
-    steps_per_epoch=train_steps,
-    callbacks=callbacks,
-    validation_data=val_set,
-    validation_steps=val_steps
-)
+# model.fit(train_set,
+#     epochs=EPOCHS,
+#     steps_per_epoch=train_steps,
+#     callbacks=callbacks,
+#     validation_data=val_set,
+#     validation_steps=val_steps
+# )
