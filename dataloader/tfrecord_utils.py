@@ -23,18 +23,20 @@ def serialize_ids(**kwargs):
     )
     return example_proto.SerializeToString()
 
-def load_from_gcs(bucket_name, prefix=None):
+def load_from_gcs(bucket_name, prefix=None, sort_key=None):
     if os.path.exists('/home/onion/private'):
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/onion/private/languagemodel-tpu-key.json"
-
+    prefix_list = list(prefix)
     storage_client = storage.Client()
-    blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
+    for prix in prefix_list:
+        blobs = storage_client.list_blobs(bucket_name, prefix=prix)
 
-    train_from = []
-    for blob in blobs:
-        name = blob.name
-        gsutil = 'gs://' + bucket_name + '/' + name 
-        train_from.append(gsutil)
+        train_from = []
+        for blob in blobs:
+            name = blob.name
+            gsutil = 'gs://' + bucket_name + '/' + name 
+            train_from.append(gsutil)
+    train_from = sorted(train_from, key=sort_key)
     return train_from
 
 def masked_lm_predictions(input_ids, masked_lm_prob,

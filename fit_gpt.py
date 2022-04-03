@@ -1,5 +1,5 @@
 import tensorflow as tf
-from transformers import GPT2Tokenizer, TFGPT2LMHeadModel, GPT2Config, TFPreTrainedModel, BertTokenizerFast
+from transformers import GPT2Tokenizer, TFGPT2LMHeadModel, GPT2Config 
 from dataloader.load_data import read_tfrecord
 from dataloader.utils import load_from_gcs
 from glob import glob

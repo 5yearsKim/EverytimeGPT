@@ -16,8 +16,8 @@ if num_replica == 1:
 
 def create_model(max_len=256, with_sop=False):
     config = BertConfig(**BERT_SMALL_CONFIG)
-    input_ids = tf.keras.layers.Input(shape=(max_len,), dtype='int32')
     bert = TFBertForPreTraining(config)
+    input_ids = tf.keras.layers.Input(shape=(max_len,), dtype='int32')
     bout = bert(input_ids)
     outputs =  [bout.prediction_logits, bout.seq_relationship_logits[:, 0]] if with_sop else bout.prediction_logits
     model = tf.keras.Model(inputs=input_ids, outputs=outputs)
@@ -41,11 +41,7 @@ with strategy.scope():
 
 # train_from = glob('data/sample/*.tfrecord', recursive=True)
 prefixes = ['mlm_tfrecord/aihub_sns', 'mlm_tfrecord/aihub_conversation', 'mlm_tfrecord/everytime', 'mlm_tfrecord/kakao']
-train_from = []
-for prefix in prefixes:
-    train_from_part = load_from_gcs('nlp-pololo', prefix=prefix)
-    train_from.extend(train_from_part)
-train_from = sorted(train_from, key=lambda path: path.split('/')[-1])
+train_from = load_from_gcs('nlp-pololo', prefix=prefixes, sort_key=lambda path: path.splt('/')[-1])
 # train_from = train_from[:1]
 print(train_from)
 
@@ -84,10 +80,10 @@ callbacks = [
     ]
 
 print(f'train batch size={batch_size}, lr={LR}')
-# model.fit(train_set,
-#     epochs=EPOCHS,
-#     steps_per_epoch=train_steps,
-#     callbacks=callbacks,
-#     validation_data=val_set,
-#     validation_steps=val_steps
-# )
+model.fit(train_set,
+    epochs=EPOCHS,
+    steps_per_epoch=train_steps,
+    callbacks=callbacks,
+    validation_data=val_set,
+    validation_steps=val_steps
+)

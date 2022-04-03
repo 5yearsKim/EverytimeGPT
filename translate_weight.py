@@ -26,4 +26,4 @@ def convert_bert(ckpt_from, ckpt_to, with_sop=False):
     bert.save_pretrained(ckpt_to)
 
 if __name__ == '__main__':
-    convert_bert('ckpts/bert/news_bert_3.h5', 'ckpts/bert/news_bert')
+    convert_bert('ckpts/bert/daily_bert2.h5', 'ckpts/bert/daily_bert')

@@ -5,20 +5,29 @@ import tensorflow as tf
 from dataloader.load_data import read_mlm_tfrecord
 
 
+# test_mlm = [
+#     '대한민국의 수도는 [MASK]이다.',
+#     '얼굴이 [MASK]하면 산이 무너지고 땅이 갈라진다.',
+#     '대한민국의 대통령인 [MASK]은 국가의 [MASK]를 위해 헌신하고 있다.',
+#     '그에게 기도할 [MASK]가 왔는가 아닌가는 내가 [MASK] 할 [MASK]이다.',
+#     '처음에는 4면 단행으로 발행하였으나, [MASK]의 자본에다가 농민들이 많이 봐서 그런지 1978년 8면, 1983년 12면, 1993년에 16면으로 증면됐다. 이후로 [MASK] 16면 체제.'
+#     '[MASK] 배송을 우편에 [MASK] 대부분 의존하는 [MASK] 때문에 16면 체제를 오래도록 [MASK]했지만, 2016년 20~24면의 지면개편을 단행했다. 2021년 현재는 16~28면 발행. 특집[MASK] 32면도 나온다'
+# ]
+
 test_mlm = [
-    '미국의 대통령은 [MASK]이다.',
-    '얼굴이 [MASK]하면 산이 무너지고 땅이 갈라진다.',
-    '대한민국의 대통령인 [MASK]은 국가의 [MASK]를 위해 헌신하고 있다.',
-    '그에게 기도할 [MASK]가 왔는가 아닌가는 내가 [MASK] 할 [MASK]이다.',
-    '처음에는 4면 단행으로 발행하였으나, [MASK]의 자본에다가 농민들이 많이 봐서 그런지 1978년 8면, 1983년 12면, 1993년에 16면으로 증면됐다. 이후로 [MASK] 16면 체제.'
-    '[MASK] 배송을 우편에 [MASK] 대부분 의존하는 [MASK] 때문에 16면 체제를 오래도록 [MASK]했지만, 2016년 20~24면의 지면개편을 단행했다. 2021년 현재는 16~28면 발행. 특집[MASK] 32면도 나온다'
+    '나 어제 힘들었어.[SEP]왜? 무슨일인데?',
+    '왜? 무슨일인데?[SEP]나 어제 힘들었어.',
+    '너 어제 왜 [MASK] 안왔어?[SEP]나 어제 힘들었어.',
+    '나 어제 힘들었어.[SEP]너 어제 왜 미팅 안왔어?',
+    '잘 잤어?[SEP]응, 잘 잤어.',
+    '응, 잘 [MASK]어. [SEP] 잘 잤어?',
+    '여기 [MASK]이 맛이 없다. [SEP] 재료를 안좋은거 써서 그래.',
+    '[MASK]를 안좋은거 써서 그래.[SEP]여기 밥이 맛이 없다',
 ]
 
 
-
 def inference():
-
-    model = TFBertForPreTraining.from_pretrained('ckpts/bert/news_bert')
+    model = TFBertForPreTraining.from_pretrained('ckpts/bert/daily_bert')
 
     tokenizer = BertTokenizerFast.from_pretrained('tknzrs/daily_tknzr')
     inputs = tokenizer(test_mlm, return_tensors='tf', padding=True) 
@@ -33,8 +42,9 @@ def inference():
     # for data in dset:
     #     inputs, label = data
     #     break
-    mlm_logits = model(inputs).prediction_logits
-    # print(mlm_logits)
+    bout = model(inputs)
+    mlm_logits = bout.prediction_logits
+    print(bout.seq_relationship_logits)
     print(tf.math.reduce_sum(mlm_logits))
 
     top_tokens = tf.math.top_k(mlm_logits, 1).indices
