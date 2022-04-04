@@ -8,6 +8,10 @@ GPT_SMALL_CONFIG = {
     'n_embd': 512,
     'n_layer': 8,
     'n_head': 8,
+    'bos_token_id': 3,
+    'eos_token_id': 3,
+    'pad_token_id': 0,
+
 }
 
 GPT_BASE_CONFIG = {
@@ -15,6 +19,9 @@ GPT_BASE_CONFIG = {
     'n_embd': 768,
     'n_layer': 12,
     'n_head': 12,
+    'bos_token_id': 3,
+    'eos_token_id': 3,
+    'pad_token_id': 0,
 }
 
 

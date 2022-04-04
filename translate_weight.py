@@ -41,6 +41,6 @@ def convert_transformer(ckpt_from, ckpt_to):
 
 
 if __name__ == '__main__':
-    # convert_bert('ckpts/bert/bert_xxsmall_sample.h5', 'ckpts/bert/xxsmall_bert')
-    convert_gpt('ckpts/gpt/gpt_small1.h5', 'ckpts/gpt/gpt_small')
+    convert_bert('ckpts/bert/bert_xxsmall.h5', 'ckpts/bert/xxsmall_bert')
+    # convert_gpt('ckpts/gpt/gpt_small1.h5', 'ckpts/gpt/gpt_small')
     # convert_transformer('ckpts/transformer/sample.h5', 'ckpts/transformer/sample')

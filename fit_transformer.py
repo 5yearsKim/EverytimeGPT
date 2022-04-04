@@ -43,8 +43,9 @@ def create_model(max_len=256):
 with strategy.scope():
     model = create_model()
 
-train_from = glob('data/transformer/everytime/*.tfrecord', recursive=True)
-# train_from = load_from_gcs('nlp-pololo', prefix=['gpt_tfrecord/everytime/'])
+# train_from = glob('data/transformer/everytime/*.tfrecord', recursive=True)
+train_from = load_from_gcs('nlp-pololo', prefix=['context_tfrecord/everytime/', 'context_tfrecord/aihub_sns', 'context_tfrecord/kakao'],\
+                    sort_key=lambda path: 0 if 'everytime' in path else 1)
 # train_from = train_from[:1]
 print(train_from)
 
@@ -53,7 +54,6 @@ dset = dset.padded_batch(batch_size, padded_shapes=((MAX_SEQ_LEN, MAX_SEQ_LEN), 
     padding_values=tf.constant(0, dtype=tf.int64), drop_remainder=True)
 
 skip_point = 1000 
-skip_point = 10
 train_set, val_set = dset.skip(skip_point), dset.take(skip_point)
 print('splitting train/val set..')
 
@@ -61,7 +61,6 @@ train_set = strategy.experimental_distribute_dataset(train_set.repeat())
 val_set = strategy.experimental_distribute_dataset(val_set)
 
 train_steps = 1_000_000 // BS + 1
-train_steps = 10
 val_steps = skip_point
 
 callbacks = [

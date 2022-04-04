@@ -120,8 +120,7 @@ if __name__ == "__main__":
     # write_mlm_tfrecord(['data/bert/mlm_data/news.txt'], 'data/bert/news', seed=4)
     # write_mlm_tfrecord(['data/sample.txt'], 'data/sample', with_sop=True)
 
-    write_tfrecord(['data/gpt/gpt_data/everytime.txt'], 'data/gpt/everytime/', mode='gpt')
-    # write_ctx_tfrecord(['data/transformer/context_data/everytime.txt'], 'data/transformer/everytime/')
+    write_tfrecord(['data/transformer/context_data/everytime.txt'], 'data/transformer/everytime/', mode='ctx')
 
 
 ''' test tokenize'''
