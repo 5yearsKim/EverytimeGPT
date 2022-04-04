@@ -42,24 +42,26 @@ def replace_sep(sent):
     return sent.replace('#|#', '[MSEP]').replace('#&#', '[CSEP]').replace('#S#', '[SEP]')
 
 def write_tfrecord(files_from, out_dir, mode='gpt', seed=None, **kwargs):
+    def get_file_path(file_idx):
+        if seed is None:
+            fname = f'record_{file_idx}.tfrecord'
+        else:
+            fname = f'seed_{seed}_record_{file_idx}.tfrecord'
+        return os.path.join(out_dir, fname)
     os.makedirs(os.path.dirname(out_dir), exist_ok=True) 
     char_cnt_max = 100_000_000
-    writer = tf.io.TFRecordWriter('sample.tfrecord')
     char_cnt = 0 
     file_idx = 1
+    writer = tf.io.TFRecordWriter(get_file_path(file_idx))
     for fpath in files_from:
         with open(fpath, 'r') as fr:
             for i, line in enumerate(tqdm(fr)):
                 if char_cnt > char_cnt_max:
                     print(i // 10000, '만')
                     writer.close()
-                    if seed is None:
-                        fname = f'record_{file_idx}.tfrecord'
-                    else:
-                        fname = f'seed_{seed}_record_{file_idx}.tfrecord'
-                    writer = tf.io.TFRecordWriter(os.path.join(out_dir, fname))
                     file_idx += 1
                     char_cnt = 0
+                    writer = tf.io.TFRecordWriter(get_file_path(file_idx))
                 char_cnt += len(line)
                 line = replace_sep(line)
                 if mode == 'gpt':
@@ -120,7 +122,7 @@ if __name__ == "__main__":
     # write_mlm_tfrecord(['data/bert/mlm_data/news.txt'], 'data/bert/news', seed=4)
     # write_mlm_tfrecord(['data/sample.txt'], 'data/sample', with_sop=True)
 
-    write_tfrecord(['data/gpt/gpt_data/everytime.txt'], 'data/gpt/everytime_test/', mode='gpt')
+    write_tfrecord(['data/gpt/gpt_data/everytime.txt'], 'data/gpt/everytime/', mode='gpt')
     # write_ctx_tfrecord(['data/transformer/context_data/everytime.txt'], 'data/transformer/everytime/')
 
 
