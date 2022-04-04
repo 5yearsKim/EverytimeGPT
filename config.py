@@ -2,7 +2,15 @@
 
 ''' model '''
 MAX_SEQ_LEN = 256
-GPT_CONFIG = {
+
+GPT_SMALL_CONFIG = {
+    'vocab_size': 32000,
+    'n_embd': 512,
+    'n_layer': 8,
+    'n_head': 8,
+}
+
+GPT_BASE_CONFIG = {
     'vocab_size': 32000,
     'n_embd': 768,
     'n_layer': 12,
@@ -21,7 +29,7 @@ WITH_SOP = True
 LOAD_PATH = 'ckpts/best.h5'
 BS = 128
 EPOCHS = 50
-LR = 4e-5
+LR = 1e-4
 
 ''' deploy '''
 TKNZR_PATH = 'tknzrs/daily_tknzr'

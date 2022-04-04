@@ -1,7 +1,7 @@
 import tensorflow as tf
-from transformers import GPT2Tokenizer, TFGPT2LMHeadModel, GPT2Config 
-from dataloader.load_data import read_tfrecord
-from dataloader.utils import load_from_gcs
+from transformers import TFGPT2LMHeadModel, GPT2Config 
+from dataloader.load_data import read_gpt_tfrecord
+from dataloader.tfrecord_utils import load_from_gcs
 from glob import glob
 from config import *
 from google.cloud import storage
@@ -15,7 +15,7 @@ if num_replica == 1:
     batch_size = 1
 
 def create_model(max_len=256):
-    config = GPT2Config(vocab_size=32000, n_embd=768, n_layer=12, n_head=12)
+    config = GPT2Config(**GPT_SMALL_CONFIG)
     input_ids = tf.keras.layers.Input(shape=(max_len,), dtype='int32')
     gpt = TFGPT2LMHeadModel(config)
     out = gpt(input_ids).logits
@@ -37,11 +37,12 @@ with strategy.scope():
 
 
 # train_from = glob('data/everytime/*.tfrecord', recursive=True)
-train_from = load_from_gcs('nlp-pololo', prefix='everytime_keword/')
+train_from = load_from_gcs('nlp-pololo', prefix=['gpt_tfrecord/everytime/'])
 # train_from = train_from[:1]
 print(train_from)
 
-dset = read_tfrecord(train_from).padded_batch(batch_size, padded_shapes=(MAX_SEQ_LEN, MAX_SEQ_LEN),\
+dset = read_gpt_tfrecord(train_from).shuffle(buffer_size=20000)
+dset = dset.padded_batch(batch_size, padded_shapes=(MAX_SEQ_LEN, MAX_SEQ_LEN),\
     padding_values=tf.constant(0, dtype=tf.int64), drop_remainder=True)
 
 skip_point = 1000 

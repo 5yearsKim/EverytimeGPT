@@ -41,55 +41,74 @@ def tokenize_line(line, max_len=256, csep_token_id=5):
 def replace_sep(sent):
     return sent.replace('#|#', '[MSEP]').replace('#&#', '[CSEP]').replace('#S#', '[SEP]')
 
-def write_mlm_tfrecord(files_from, out_dir, seed=0, with_sop=False):
-    file_item_len = 100_000
-    file_idx = 1
+def write_tfrecord(files_from, out_dir, mode='gpt', seed=None, **kwargs):
     os.makedirs(os.path.dirname(out_dir), exist_ok=True) 
+    char_cnt_max = 100_000_000
     writer = tf.io.TFRecordWriter('sample.tfrecord')
+    char_cnt = 0 
+    file_idx = 1
     for fpath in files_from:
         with open(fpath, 'r') as fr:
             for i, line in enumerate(tqdm(fr)):
-                if i % file_item_len == 0:
+                if char_cnt > char_cnt_max:
                     print(i // 10000, '만')
                     writer.close()
-                    writer = tf.io.TFRecordWriter(os.path.join(out_dir, f'seed_{seed}_record_{file_idx}.tfrecord'))
-                    file_idx += 1
-                line = replace_sep(line)
-                input_ids_list = tokenize_line(line)
-                for input_ids in input_ids_list:
-                    mout = masked_lm_predictions(input_ids, 0.2, with_sop=with_sop)
-                    if with_sop:
-                        example = serialize_ids(masked_input_ids = mout['masked_input_ids'], masked_label=mout['masked_label'], sop_label=mout['sop_label'])
+                    if seed is None:
+                        fname = f'record_{file_idx}.tfrecord'
                     else:
-                        example = serialize_ids(masked_input_ids = mout['masked_input_ids'], masked_label=mout['masked_label'])
+                        fname = f'seed_{seed}_record_{file_idx}.tfrecord'
+                    writer = tf.io.TFRecordWriter(os.path.join(out_dir, fname))
+                    file_idx += 1
+                    char_cnt = 0
+                char_cnt += len(line)
+                line = replace_sep(line)
+                if mode == 'gpt':
+                    examples = process_gpt(line)
+                elif mode == 'mlm':
+                    examples = process_mlm(line, kwargs['with_sop'])
+                elif mode == 'ctx':
+                    examples = process_ctx(line)
+                else:
+                    raise Exception(f'mode {mode} not supported!')
+
+                if not examples:
+                    print(examples)
+                    continue
+                for example in examples:
                     writer.write(example)
     writer.close()
 
-def write_ctx_tfrecord(files_from, out_dir):
-    os.makedirs(os.path.dirname(out_dir), exist_ok=True) 
-    file_item_len = 100_000
-    writer = tf.io.TFRecordWriter('sample.tfrecord')
-    file_idx = 1
-    for fpath in files_from:
-        with open(fpath, 'r') as fr:
-            for i, line in enumerate(tqdm(fr)):
-                if i % file_item_len == 0:
-                    print(i // 10000, '만')
-                    writer.close()
-                    writer = tf.io.TFRecordWriter(os.path.join(out_dir, f'record_{file_idx}.tfrecord'))
-                    file_idx += 1
-                line = replace_sep(line)
-                try:
-                    context, ans = line.split('[SEP]')
-                    print(context,'||||', ans)
-                    context_ids = tokenize_line(context)[-1]
-                    ans_ids = tokenize_line(ans)[-1]
-                except:
-                    print(line)
-                    continue
-                example = serialize_ids(context_ids=context_ids, answer_ids=ans_ids)
-                writer.write(example)
-    writer.close()
+def process_ctx(line):
+    try:
+        context, ans = line.split('[SEP]')
+        print(context,'||||', ans)
+        context_ids = tokenize_line(context)[-1]
+        ans_ids = tokenize_line(ans)[-1]
+    except:
+        print(line)
+        return None
+    example = serialize_ids(context_ids=context_ids, answer_ids=ans_ids)
+    return [example]
+
+def process_mlm(line, with_sop):
+    holder = []
+    input_ids_list = tokenize_line(line)
+    for input_ids in input_ids_list:
+        mout = masked_lm_predictions(input_ids, 0.2, with_sop=with_sop)
+        if with_sop:
+            example = serialize_ids(masked_input_ids = mout['masked_input_ids'], masked_label=mout['masked_label'], sop_label=mout['sop_label'])
+        else:
+            example = serialize_ids(masked_input_ids = mout['masked_input_ids'], masked_label=mout['masked_label'])
+        holder.append(example)
+    return holder
+
+def process_gpt(line):
+    holder = []
+    input_list = tokenize_line(line)
+    for input_ids in input_list:
+        example = serialize_ids(input_ids=input_ids)
+        holder.append(example)
+    return holder
 
 
 
@@ -101,8 +120,8 @@ if __name__ == "__main__":
     # write_mlm_tfrecord(['data/bert/mlm_data/news.txt'], 'data/bert/news', seed=4)
     # write_mlm_tfrecord(['data/sample.txt'], 'data/sample', with_sop=True)
 
-
-    write_ctx_tfrecord(['data/transformer/context_data/everytime.txt'], 'data/transformer/everytime/')
+    write_tfrecord(['data/gpt/gpt_data/everytime.txt'], 'data/gpt/everytime_test/', mode='gpt')
+    # write_ctx_tfrecord(['data/transformer/context_data/everytime.txt'], 'data/transformer/everytime/')
 
 
 ''' test tokenize'''
