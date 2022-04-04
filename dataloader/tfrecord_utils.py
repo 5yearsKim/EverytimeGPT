@@ -28,10 +28,10 @@ def load_from_gcs(bucket_name, prefix=None, sort_key=None):
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/onion/private/languagemodel-tpu-key.json"
     prefix_list = list(prefix)
     storage_client = storage.Client()
+    train_from = []
     for prix in prefix_list:
         blobs = storage_client.list_blobs(bucket_name, prefix=prix)
 
-        train_from = []
         for blob in blobs:
             name = blob.name
             gsutil = 'gs://' + bucket_name + '/' + name 

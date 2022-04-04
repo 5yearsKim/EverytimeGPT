@@ -47,12 +47,15 @@ print(train_from)
 
 if WITH_SOP:
     dset = read_mlm_tfrecord(train_from, with_sop=True)\
+        .shuffle(buffer_size=20000)\
         .padded_batch(batch_size,\
             padded_shapes=(MAX_SEQ_LEN, (MAX_SEQ_LEN, 1)),\
             padding_values=(tf.constant(0, dtype=tf.int64), (tf.constant(-100, dtype=tf.int64), 0.)),\
             drop_remainder=True)
 else:
-    dset = read_mlm_tfrecord(train_from).padded_batch(batch_size,
+    dset = read_mlm_tfrecord(train_from)\
+        .shuffle(buffer_size=20000)\
+        .padded_batch(batch_size,
             padded_shapes=(MAX_SEQ_LEN, MAX_SEQ_LEN),\
             padding_values=(tf.constant(0, dtype=tf.int64), tf.constant(-100, dtype=tf.int64)),\
             drop_remainder=True)
