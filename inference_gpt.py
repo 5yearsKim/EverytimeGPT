@@ -1,25 +1,40 @@
 from transformers import BertTokenizerFast, TFGPT2LMHeadModel, GPT2Config
+from transformers import TFEncoderDecoderModel
 import tensorflow as tf
 from config import *
 
 tokenizer = BertTokenizerFast.from_pretrained(TKNZR_PATH)
 
-def inference():
+def inference_gpt():
     print('tokenizer loaded')
 
-    model = TFGPT2LMHeadModel.from_pretrained(DEPLOY_PATH, pad_token_id=0, eos_token_id=3 )
+    # model = TFGPT2LMHeadModel.from_pretrained(DEPLOY_PATH, pad_token_id=0, eos_token_id=3 )
+    model = TFGPT2LMHeadModel.from_pretrained('ckpts/gpt/gpt_small', pad_token_id=0, eos_token_id=3 )
 
-    text_start = '맛집 추천'
+    text_start = '사실 여자친구가 '
 
     inputs = tokenizer(text_start, return_tensors="tf")
 
     input_ids = inputs.input_ids[:, :-1]
     sample_outputs = generate_topk(model, input_ids, max_len=80) 
+    # sample_outputs = generate_beam(model, input_ids)
+
+    decoded = decoding(sample_outputs)
+    for sent in decoded:
+        print(sent)
+
+def inference_transformer():
+    model = TFEncoderDecoderModel.from_pretrained('ckpts/transformer/sample')
+    context = '내 전화번호는 '
+    inputs = tokenizer(context, return_tensors="tf")
+
+    sample_outputs = generate_topk(model, inputs, max_len=80) 
     # sample_outputs = generate_beam(model, input_ids) 
 
     decoded = decoding(sample_outputs)
     for sent in decoded:
         print(sent)
+
 
 def decoding(ids_list):
     def make_pretty(sent):
@@ -38,7 +53,7 @@ def generate_beam(model, input_ids, num_beams=1, max_len=40):
         num_return_sequences=num_beams,
         early_stopping=True,
         no_repeat_ngram_size=1,
-        bad_token_ids = msep, csep
+        # bad_token_ids = msep, csep
     )
     return sample_outputs.numpy()
 
@@ -58,4 +73,5 @@ def generate_topk(model, input_ids, k=5, max_len=40, num_sent=3, temperature=0.8
     return sample_outputs.numpy()
 
 if __name__ == '__main__':
-    inference()
+    # inference_transformer()
+    inference_gpt()

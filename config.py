@@ -16,6 +16,15 @@ GPT_BASE_CONFIG = {
     'n_layer': 12,
     'n_head': 12,
 }
+
+
+BERT_XXSMALL_CONFIG = {
+    'vocab_size': 32000,
+    'hidden_size': 512,
+    'num_hidden_layers': 1,
+    'num_attention_heads': 8
+}
+
 BERT_SMALL_CONFIG = {
     'vocab_size': 32000,
     'hidden_size': 512,

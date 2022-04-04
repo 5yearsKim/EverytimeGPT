@@ -15,7 +15,7 @@ if num_replica == 1:
     batch_size = 1
 
 def create_model(max_len=256, with_sop=False):
-    config = BertConfig(**BERT_SMALL_CONFIG)
+    config = BertConfig(**BERT_XXSMALL_CONFIG)
     bert = TFBertForPreTraining(config)
     input_ids = tf.keras.layers.Input(shape=(max_len,), dtype='int32')
     bout = bert(input_ids)
@@ -41,7 +41,7 @@ with strategy.scope():
 
 # train_from = glob('data/sample/*.tfrecord', recursive=True)
 prefixes = ['mlm_tfrecord/aihub_sns', 'mlm_tfrecord/aihub_conversation', 'mlm_tfrecord/everytime', 'mlm_tfrecord/kakao']
-train_from = load_from_gcs('nlp-pololo', prefix=prefixes, sort_key=lambda path: path.splt('/')[-1])
+train_from = load_from_gcs('nlp-pololo', prefix=prefixes, sort_key=lambda path: path.split('/')[-1])
 # train_from = train_from[:1]
 print(train_from)
 

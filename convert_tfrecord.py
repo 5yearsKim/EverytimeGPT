@@ -37,7 +37,6 @@ def tokenize_line(line, max_len=256, csep_token_id=5):
     cut_and_append(input_ids)
     return holder
 
-
 def replace_sep(sent):
     return sent.replace('#|#', '[MSEP]').replace('#&#', '[CSEP]').replace('#S#', '[SEP]')
 
@@ -83,7 +82,6 @@ def write_tfrecord(files_from, out_dir, mode='gpt', seed=None, **kwargs):
 def process_ctx(line):
     try:
         context, ans = line.split('[SEP]')
-        print(context,'||||', ans)
         context_ids = tokenize_line(context)[-1]
         ans_ids = tokenize_line(ans)[-1]
     except:
