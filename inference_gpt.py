@@ -24,11 +24,12 @@ def inference_gpt():
         print(sent)
 
 def inference_transformer():
-    model = TFEncoderDecoderModel.from_pretrained('ckpts/transformer/sample')
-    context = '내 전화번호는 '
+    model = TFEncoderDecoderModel.from_pretrained('ckpts/transformer/context')
+    context = '여자친구랑 헤어졌어.'
     inputs = tokenizer(context, return_tensors="tf")
+    input_ids = inputs.input_ids
 
-    sample_outputs = generate_topk(model, inputs, max_len=80) 
+    sample_outputs = generate_topk(model, input_ids, max_len=80) 
     # sample_outputs = generate_beam(model, input_ids) 
 
     decoded = decoding(sample_outputs)
@@ -73,5 +74,5 @@ def generate_topk(model, input_ids, k=5, max_len=40, num_sent=3, temperature=0.8
     return sample_outputs.numpy()
 
 if __name__ == '__main__':
-    # inference_transformer()
-    inference_gpt()
+    inference_transformer()
+    # inference_gpt()

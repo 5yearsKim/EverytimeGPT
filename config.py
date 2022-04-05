@@ -45,7 +45,7 @@ WITH_SOP = True
 LOAD_PATH = 'ckpts/best.h5'
 BS = 128
 EPOCHS = 50
-LR = 1e-4
+LR = 5e-5
 
 ''' deploy '''
 TKNZR_PATH = 'tknzrs/daily_tknzr'
