@@ -11,7 +11,7 @@ def inference_gpt():
     # model = TFGPT2LMHeadModel.from_pretrained(DEPLOY_PATH, pad_token_id=0, eos_token_id=3 )
     model = TFGPT2LMHeadModel.from_pretrained('ckpts/gpt/gpt_small', pad_token_id=0, eos_token_id=3 )
 
-    text_start = '사실 여자친구가 '
+    text_start = '나 이성애자인데'
 
     inputs = tokenizer(text_start, return_tensors="tf")
 
@@ -24,8 +24,8 @@ def inference_gpt():
         print(sent)
 
 def inference_transformer():
-    model = TFEncoderDecoderModel.from_pretrained('ckpts/transformer/context')
-    context = '여자친구랑 헤어졌어.'
+    model = TFEncoderDecoderModel.from_pretrained('ckpts/transformer/sample')
+    context = '나 이성애자야.'
     inputs = tokenizer(context, return_tensors="tf")
     input_ids = inputs.input_ids
 
@@ -74,5 +74,5 @@ def generate_topk(model, input_ids, k=5, max_len=40, num_sent=3, temperature=0.8
     return sample_outputs.numpy()
 
 if __name__ == '__main__':
-    inference_transformer()
-    # inference_gpt()
+    # inference_transformer()
+    inference_gpt()

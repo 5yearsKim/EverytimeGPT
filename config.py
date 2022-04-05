@@ -40,9 +40,9 @@ BERT_SMALL_CONFIG = {
 }
 
 ''' train'''
-IS_LOAD = False 
+IS_LOAD = True 
 WITH_SOP = True 
-LOAD_PATH = 'ckpts/best.h5'
+LOAD_PATH = 'ckpts/gpt/gpt_small1.h5'
 BS = 128
 EPOCHS = 50
 LR = 5e-5

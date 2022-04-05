@@ -41,7 +41,21 @@ def make_ctx_label(feature):
     answer_ids = feature['answer_ids']
     return (context_ids, answer_ids[:-1]), answer_ids[1:]
 
-def read_ctx_tfrecord(files_from):
+def make_ctx_with_mask_label(feature, csep_token_id=5, max_len=250):
+    context_ids = feature['context_ids']
+    answer_ids = feature['answer_ids']
+    context = tf.concat([context_ids[:-1], [csep_token_id], answer_ids[1:]], 0)
+    # print(context_ids)
+    label = tf.concat([tf.fill(tf.shape(context_ids[:-1]), tf.constant(-100, dtype=tf.int64)), [csep_token_id], answer_ids[1:]], 0)
+
+    context, label = context[-max_len:], label[-max_len:]
+
+    return context[:-1], label[1:]
+    # return tf.concat([context_ids[:-1], answer_ids[1:]], 0)
+    
+    
+
+def read_ctx_tfrecord(files_from, with_mask=False):
     feature_description = {
         'context_ids': tf.io.FixedLenSequenceFeature([], tf.int64, allow_missing=True, default_value=0),
         'answer_ids': tf.io.FixedLenSequenceFeature([], tf.int64, allow_missing=True, default_value=0),
@@ -51,7 +65,10 @@ def read_ctx_tfrecord(files_from):
         return tf.io.parse_single_example(example_proto, feature_description)
 
     raw_dataset = tf.data.TFRecordDataset(files_from)
-    dataset = raw_dataset.map(_parse_func).map(make_ctx_label)
+    if with_mask:
+        dataset = raw_dataset.map(_parse_func).map(make_ctx_with_mask_label)
+    else:
+        dataset = raw_dataset.map(_parse_func).map(make_ctx_label)
     return dataset
 
 

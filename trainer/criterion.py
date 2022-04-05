@@ -26,6 +26,8 @@ def masked_cce(y_true, y_pred):
 @tf.function
 def pad_masked_cce(y_true, y_pred):
     mask = tf.cast(y_true > 0, dtype=tf.float32)
+    y_true = tf.math.abs(y_true)
+    loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True)
     loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True)
     loss = tf.math.multiply(loss, mask)
     loss = tf.math.reduce_sum(loss) / (tf.math.reduce_sum(mask) + 1e-6)
