@@ -49,4 +49,4 @@ LR = 5e-5
 
 ''' deploy '''
 TKNZR_PATH = 'tknzrs/daily_tknzr'
-DEPLOY_PATH = 'ckpts/for_serve'
+DEPLOY_PATH = 'ckpts/gpt/for_serve'

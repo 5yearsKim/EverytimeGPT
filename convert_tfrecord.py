@@ -1,4 +1,3 @@
-from lib2to3.pgen2 import token
 import tensorflow as tf
 from transformers import BertTokenizerFast
 from dataloader.tfrecord_utils import  serialize_ids, masked_lm_predictions
