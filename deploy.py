@@ -4,7 +4,18 @@ import tensorflow as tf
 from pydantic import BaseModel
 from config import *
 from inference_gpt import generate_topk, decoding
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 tokenizer = BertTokenizerFast.from_pretrained("./tknzrs/daily_tknzr")
 model = TFGPT2LMHeadModel.from_pretrained(DEPLOY_PATH, pad_token_id=0, eos_token_id=3)
@@ -48,3 +59,7 @@ async def generate_sample(body: GenerateTpl):
     decoded = decoding(sample_outputs)
     decoded = list(map(make_pretty, decoded))
     return {'generated': decoded}
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run('deploy.app', host='0.0.0.0', port=8001, reload=False, debug=False, workers=2)
