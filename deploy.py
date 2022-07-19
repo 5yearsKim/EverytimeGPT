@@ -7,9 +7,10 @@ from inference_gpt import generate_topk, decoding
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-
+origins=['*']
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,4 +63,4 @@ async def generate_sample(body: GenerateTpl):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run('deploy.app', host='0.0.0.0', port=8001, reload=False, debug=False, workers=2)
+    uvicorn.run('deploy:app', host='0.0.0.0', port=8001, reload=False, debug=False, workers=2)
