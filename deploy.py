@@ -46,7 +46,7 @@ async def generate_sample(body: GenerateTpl):
     if mode == 'keyword':
         prefix = '[MSEP]'.join(body.keywords)
         sent = prefix + '[CSEP]' + body.sent
-        no_repeat_size = 2
+        no_repeat_size = 1 # 2
     else:
         sent = body.sent
         no_repeat_size = 1
