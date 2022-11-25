@@ -20,7 +20,7 @@
     z-index: 3; }
   #text-generator .button-row {
     display: flex;
-    justify-content: end; }
+    justify-content: flex-end; }
   #text-generator .result-paper {
     padding: 15px;
     min-height: 100px;
