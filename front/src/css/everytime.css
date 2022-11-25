@@ -1,0 +1,77 @@
+#everytime-screen .max-width {
+  position: relative;
+  margin: auto;
+  max-width: 1000px; }
+
+#everytime-screen .animation-box {
+  position: absolute; }
+
+#everytime-screen .section {
+  height: 100vh;
+  width: 100%;
+  min-height: 200px; }
+  #everytime-screen .section.s1 {
+    background-color: #fb6b6b; }
+    #everytime-screen .section.s1 span {
+      color: white;
+      font-size: 50px;
+      text-align: center; }
+      @media (max-width: 479px) {
+        #everytime-screen .section.s1 span {
+          font-size: 40px; } }
+    #everytime-screen .section.s1 .img-row {
+      padding-top: 32vh;
+      display: flex;
+      justify-content: center; }
+      @media (max-width: 479px) {
+        #everytime-screen .section.s1 .img-row {
+          padding-top: 45vh; } }
+      #everytime-screen .section.s1 .img-row .et-img {
+        margin: 20px;
+        top: 35vh;
+        height: 60vh; }
+        @media (max-width: 479px) {
+          #everytime-screen .section.s1 .img-row .et-img {
+            margin: 5px;
+            height: 50vh; } }
+  #everytime-screen .section.s2 {
+    background-color: #f33b27; }
+    #everytime-screen .section.s2 h1 {
+      color: white;
+      text-align: center;
+      font-size: 50px; }
+  #everytime-screen .section.s3 {
+    background-color: #ffe7ef; }
+  #everytime-screen .section.s4 {
+    background-color: #c8f2c8; }
+  #everytime-screen .section.s5 {
+    background-color: #fbc2e6; }
+  #everytime-screen .section.s6 {
+    background-color: #cfefff; }
+  #everytime-screen .section.s7 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #febcb9;
+    padding: 50px; }
+
+#everytime-screen .generated-result {
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translate(-50%, 0); }
+  @media (max-width: 479px) {
+    #everytime-screen .generated-result {
+      top: 5%; } }
+  #everytime-screen .generated-result .row {
+    display: flex; }
+  #everytime-screen .generated-result .generated {
+    display: flex;
+    margin-top: 18px;
+    margin-bottom: 18px; }
+    #everytime-screen .generated-result .generated span {
+      font-size: 20px; }
+    #everytime-screen .generated-result .generated .expanded {
+      flex: 1; }
+    #everytime-screen .generated-result .generated .bold {
+      font-weight: bold; }

@@ -1,0 +1,26 @@
+@font-face {
+  font-family: 'NanumSR';
+  font-style: normal;
+  font-weight: 300;
+  src: url("../assets/fonts/NanumSquareRoundL.ttf") format("truetype"); }
+
+@font-face {
+  font-family: 'NanumSR';
+  font-style: normal;
+  font-weight: 500;
+  src: url("../assets/fonts/NanumSquareRoundR.ttf") format("truetype"); }
+
+@font-face {
+  font-family: 'NanumSR';
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/fonts/NanumSquareRoundB.ttf") format("truetype"); }
+
+@font-face {
+  font-family: 'NanumSR';
+  font-style: normal;
+  font-weight: 900;
+  src: url("../assets/fonts/NanumSquareRoundEB.ttf") format("truetype"); }
+
+#root {
+  font-family: 'NanumSR'; }

@@ -1,0 +1,55 @@
+@import 'global';
+
+#gpt-generate-screen {
+  margin: auto;
+  padding: 10px;
+  max-width: $max-width;
+  margin-top: 30px;
+  margin-bottom: 100px;
+  h1 {
+    text-align: center;
+  }
+}
+
+#text-generator {
+  position: relative;
+  margin: auto;
+  max-width: 500px;
+  .circular-progress {
+    position: absolute;
+    left: 50%;
+    top: 30px;
+    right: 50%;
+    margin: auto;
+    z-index: 3;
+
+  }
+  .button-row {
+    display: flex;
+    justify-content: end;
+  }
+  .result-paper {
+    padding: 15px;
+    min-height: 100px;
+    background: aliceblue;
+    border-radius: 20px;
+    .result-box {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      .bold {
+        font-weight: 700;
+      }
+    }
+  }
+  .keyword-container {
+    display: flex;
+    align-items: center;
+    // background: yellow;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+  }
+}

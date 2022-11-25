@@ -1,0 +1,25 @@
+
+
+$max-width: 1000px;
+
+// reponsive settings
+$br-sm: 480px;
+$br-md: 768px;
+$br-lg: 1024px;
+$br-xl: 1440px;
+
+@mixin mobile {
+  @media (max-width: #{$br-sm - 1px}) {
+    @content;
+  }
+}
+@mixin tablet {
+  @media (min-width: #{$br-sm}) and (max-width: #{$br-md - 1px}) {
+    @content;
+  }
+}
+@mixin desktop {
+  @media (min-width: #{$br-md}) {
+    @content;
+  }
+}
