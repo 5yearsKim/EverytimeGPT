@@ -3,6 +3,9 @@
 에브리타임 게시글을 크롤링 해서 GPT 로 학습시키면 AI는 무슨말을 할까?
 
 **설명 영상**
+
+https://youtu.be/G7AJ7XsH9aw
+
 <br>
 
 <img src="demo_imgs/everytime1.png" width="500">
